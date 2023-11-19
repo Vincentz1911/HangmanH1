@@ -19,7 +19,7 @@
 
         static List<WordApi> GetRandomWord()
         {
-            string[]? words = Get<string[]?>("https://random-word-form.repl.co/random/noun?count=10");
+            string[]? words = Get<string[]?>("https://random-word-form.repl.co/random/noun?count=20");
             if (words == null)
             {
                 Console.WriteLine("No words found online. Using Hardcoded wordlist.");

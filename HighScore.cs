@@ -13,7 +13,7 @@ namespace HangmanH1
         public int Life { get; set; }
         public int Score { get; set; }
 
-        public void PostHighScore()
+        public async Task PostHighScore()
         {
             using (SqlConnection conn = new(connectionString))
             {
@@ -26,11 +26,11 @@ namespace HangmanH1
                 cmd.Parameters.Add("@time", SqlDbType.Int).Value = Time;
                 cmd.Parameters.Add("@life", SqlDbType.Int).Value = Life;
                 conn.Open();
-                cmd.ExecuteNonQuery();
+                await cmd.ExecuteNonQueryAsync();
             }
         }
 
-        public static List<HighScore> GetHighScores()
+        public static async Task<List<HighScore>> GetHighScoresAsync()
         {
             List<HighScore> highScores = new List<HighScore>();
 
@@ -38,7 +38,7 @@ namespace HangmanH1
             {
                 SqlCommand cmd = new("SELECT TOP(20) * FROM HighScore ORDER BY Score DESC", conn);
                 conn.Open();
-                using (SqlDataReader reader = cmd.ExecuteReader())
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                 {
                     while (reader.Read())
                     {

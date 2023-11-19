@@ -21,7 +21,7 @@ namespace HangmanH1
         {
             Console.CursorVisible = false;
             Console.Clear();
-            ShowHighScores();
+            _ = ShowHighScoresAsync();
             word = new Word();
             DrawHangman();
 
@@ -34,7 +34,7 @@ namespace HangmanH1
             if (word.Life > 0)
             {
                 HighScore hs = new() { Name = name, Life = word.Life, Score = score, Word = word.Secret, Time = sw.ElapsedMilliseconds };
-                hs.PostHighScore();
+                Task.Run(() => hs.PostHighScore());
                 Write($"You guessed the word in {sw.Elapsed}\n with {word.Life} lives left." +
                     $" Your score was {score}.\n Try again? (Y/N)", 1, ++word.HintsLine, ConsoleColor.Green);
             }
@@ -123,7 +123,7 @@ namespace HangmanH1
             foreach (string t in word.Hints[word.HintsUsed++].Split(' '))
             {
                 int similarity = Math.Abs((word.Secret.Length - LevenshteinDistance(word.Secret, t.ToUpper())) * 100 / word.Secret.Length);
-                if (t.ToUpper().Contains(word.Secret) || similarity >= 70)
+                if (t.ToUpper().Contains(word.Secret.Replace("TION", "").Replace("ING", "").Replace("ANCE", "")) || similarity >= 70)
                     Console.Write(new string('_', t.Length) + " ");
                 else Console.Write(t + " ");
                 counter += t.Length;
@@ -144,9 +144,9 @@ namespace HangmanH1
             Write($"Used: {word.LettersUsed}", 10, 8, ConsoleColor.Cyan);
         }
 
-        static void ShowHighScores()
+        static async Task ShowHighScoresAsync()
         {
-            List<HighScore> hs = HighScore.GetHighScores();
+            List<HighScore> hs = await HighScore.GetHighScoresAsync();
             Write("Score Name      Word", 44, 1);
             for (int i = 0; i < hs.Count; i++)
             {
